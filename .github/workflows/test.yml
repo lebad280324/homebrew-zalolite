@@ -1,0 +1,22 @@
+name: Test cask
+
+on:
+  push:
+    paths: ["Casks/**", ".github/workflows/test.yml"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  install:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install and uninstall the cask
+        run: |
+          brew tap-new --no-git local/test
+          cp Casks/zalolite.rb "$(brew --repository local/test)/Casks/zalolite.rb"
+          brew style local/test/zalolite
+          brew audit --cask --online local/test/zalolite || true
+          brew install --cask local/test/zalolite
+          test -d /Applications/Zalolite.app
+          brew uninstall --cask local/test/zalolite

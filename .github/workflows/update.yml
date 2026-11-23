@@ -1,0 +1,52 @@
+name: Update cask
+
+on:
+  schedule:
+    - cron: "17 */3 * * *"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to point the cask at (default: latest release)"
+        required: false
+  repository_dispatch:
+    types: [zalolite-release]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-cask
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Point the cask at the release
+        id: bump
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sh scripts/update-cask.sh "${{ inputs.version || github.event.client_payload.version }}"
+          if git diff --quiet; then echo "changed=false" >> "$GITHUB_OUTPUT"; else echo "changed=true" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Check the cask installs
+        if: steps.bump.outputs.changed == 'true'
+        run: |
+          brew tap-new --no-git local/test
+          cp Casks/zalolite.rb "$(brew --repository local/test)/Casks/zalolite.rb"
+          brew style local/test/zalolite
+          brew install --cask local/test/zalolite
+          test -d /Applications/Zalolite.app
+          brew uninstall --cask local/test/zalolite
+
+      - name: Commit
+        if: steps.bump.outputs.changed == 'true'
+        run: |
+          version=$(sed -n 's/^  version "\(.*\)"$/\1/p' Casks/zalolite.rb)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "zalolite $version"
+          git push
