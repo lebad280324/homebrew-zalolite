@@ -36,6 +36,7 @@ jobs:
         if: steps.bump.outputs.changed == 'true'
         run: |
           brew tap-new --no-git local/test
+          mkdir -p "$(brew --repository local/test)/Casks"
           cp Casks/zalolite.rb "$(brew --repository local/test)/Casks/zalolite.rb"
           brew style local/test/zalolite
           brew install --cask local/test/zalolite
