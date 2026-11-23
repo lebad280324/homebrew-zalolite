@@ -21,18 +21,17 @@ cask "zalolite" do
     strategy :github_latest
   end
 
-  depends_on macos: ">= :ventura"
+  depends_on macos: :ventura
 
   app "Zalolite.app"
-
-  # The app is ad-hoc signed and not notarized; the in-app updater clears this flag the same way.
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args: ["-dr", "com.apple.quarantine", "#{appdir}/Zalolite.app"]
-  end
 
   zap trash: [
     "~/Library/Application Support/ctdozlite-native",
     "~/Library/Preferences/com.ctdoteam1110.ctdozlite.native.plist",
   ]
+
+  caveats <<~EOS
+    Zalolite được ký ad-hoc, chưa được Apple notarize. Nếu macOS chặn lần mở đầu, vào
+    System Settings → Privacy & Security rồi bấm Open Anyway.
+  EOS
 end

@@ -26,6 +26,6 @@ brew uninstall --cask zalolite
 
 Cứ 3 giờ, GitHub Actions kiểm tra bản phát hành mới nhất của Zalolite. Khi có bản mới, workflow đổi phiên bản và mã SHA-256 trong cask theo `SHA256SUMS.txt` của bản phát hành, thử cài trên macOS rồi commit. Có thể chạy tay workflow **Update cask** để cập nhật ngay.
 
-Zalolite được ký ad-hoc, chưa được Apple notarize. Sau khi cài, cask gỡ cờ quarantine giống trình cập nhật trong ứng dụng, để macOS không chặn lần mở đầu.
+Zalolite được ký ad-hoc, chưa được Apple notarize. Nếu macOS chặn lần mở đầu, vào **System Settings → Privacy & Security** rồi bấm **Open Anyway**. Chỉ cần làm một lần.
 
 Zalolite vẫn có trình cập nhật riêng trong **Cài đặt → Cập nhật phần mềm**. Dùng cách nào cũng được.
